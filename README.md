@@ -112,6 +112,12 @@ $script.ready(['foo', 'bar', 'thunk'], function () {
       $script(dependencyList[dep], dep)
     })
   })
+
+// download and execute scripts in order.
+$script.order(['a.js', 'b.js', 'c.js'], 'foo', function () {
+  ...
+})
+
 ```
 
 $script.path()
