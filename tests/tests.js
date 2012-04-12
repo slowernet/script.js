@@ -70,6 +70,34 @@ script('../node_modules/domready/ready.js', function () {
         }
       })
 
+      var verify_src = function(a, b) {
+        var scripts = document.getElementsByTagName('script')
+        for (i=0; i<scripts.length; i++ ) {
+          if (scripts[i].src && scripts[i].src.length > 0 && scripts[i].src.indexOf(a) != -1) {
+            return scripts[i].src.split("").reverse().join("").indexOf((a + b).split("").reverse().join("")) == 0
+          }
+        }
+      }
+  
+      test('cachebuster', 2, function () {
+        var cachebuster = '9a06d4ba'
+        script.cachebuster(cachebuster)
+        
+        script('404-a.js', function () {
+          ok(verify_src('404-a.js', '?' + cachebuster), 'correct ? url')
+        })
+        script('404-b.js?foo=bar', function () {
+          ok(verify_src('404-b.js?foo=bar', '&' + cachebuster), 'correct & url')
+        })
+      })
+      
+      test('cachebuster deactivation', 1, function () {
+        script.cachebuster(null)
+        script('404-c.js', function () {
+          ok(verify_src('404-c.js', ''), 'correct url when cachebuster == null')
+        })
+      })
+      
       test('should callback a duplicate file without loading the file', 1, function () {
         script('../vendor/yui-utilities.js', function () {
           ok(true, 'loaded yui twice. nice')
@@ -101,7 +129,7 @@ script('../node_modules/domready/ready.js', function () {
           ok(ordera && orderb && orderc, 'done listen for readiness by id')
         })
       })
-
+      
     })
     start()
   })

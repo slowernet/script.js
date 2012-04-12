@@ -1,7 +1,7 @@
 /*!
   * $script.js Async loader & dependency manager
   * https://github.com/ded/script.js
-  * (c) Dustin Diaz, Jacob Thornton 2011
+  * (c) Dustin Diaz, Jacob Thornton 2012
   * License: MIT
   */
 (function (name, definition) {
@@ -12,7 +12,7 @@
   var doc = document
     , head = doc.getElementsByTagName('head')[0]
     , validBase = /^https?:\/\//
-    , list = {}, ids = {}, delay = {}, scriptpath
+    , list = {}, ids = {}, delay = {}, scriptpath, cachebuster
     , scripts = {}, s = 'string', f = false
     , push = 'push', domContentLoaded = 'DOMContentLoaded', readyState = 'readyState'
     , addEventListener = 'addEventListener', onreadystatechange = 'onreadystatechange'
@@ -61,7 +61,8 @@
         }
         scripts[path] = 1
         id && (ids[id] = 1)
-        create(!validBase.test(path) && scriptpath ? scriptpath + path + '.js' : path, callback)
+        var p = !validBase.test(path) && scriptpath ? scriptpath + path + '.js' : path
+        create(p + (cachebuster ? (p.indexOf('?') == -1 ? '?' : '&') + cachebuster : ''), callback)
       })
     }, 0)
     return $script
@@ -95,6 +96,11 @@
   $script.path = function (p) {
     scriptpath = p
   }
+
+  $script.cachebuster = function (p) {
+    cachebuster = p
+  }
+
   $script.ready = function (deps, ready, req) {
     deps = deps[push] ? deps : [deps]
     var missing = [];
